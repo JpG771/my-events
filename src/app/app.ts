@@ -1,12 +1,43 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterLink, TranslateModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
-  protected readonly title = signal('my-events');
+export class App implements OnInit {
+  isAuthenticated = false;
+  currentLanguage = 'en';
+
+  constructor(
+    private authService: AuthService,
+    private translate: TranslateService,
+    private router: Router
+  ) {
+    this.translate.setDefaultLang('en');
+    this.translate.use('en');
+  }
+
+  ngOnInit() {
+    this.authService.currentUser$.subscribe(user => {
+      this.isAuthenticated = !!user;
+    });
+  }
+
+  async logout() {
+    await this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  switchLanguage(lang: 'en' | 'fr') {
+    this.currentLanguage = lang;
+    this.translate.use(lang);
+  }
 }
+

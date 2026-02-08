@@ -1,0 +1,135 @@
+{
+  "app": {
+    "title": "Mes Événements",
+    "welcome": "Bienvenue à Mes Événements"
+  },
+  "auth": {
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "register": "S'inscrire",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "displayName": "Nom d'affichage",
+    "forgotPassword": "Mot de passe oublié?",
+    "noAccount": "Vous n'avez pas de compte?",
+    "hasAccount": "Vous avez déjà un compte?",
+    "loginWithGoogle": "Se connecter avec Google",
+    "or": "OU"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "events": "Événements",
+    "calendar": "Calendrier",
+    "friends": "Amis",
+    "budget": "Budget",
+    "notifications": "Notifications",
+    "profile": "Profil",
+    "settings": "Paramètres"
+  },
+  "event": {
+    "create": "Créer un événement",
+    "edit": "Modifier l'événement",
+    "delete": "Supprimer l'événement",
+    "cancel": "Annuler l'événement",
+    "cancelOccurrence": "Annuler cette occurrence",
+    "title": "Titre de l'événement",
+    "description": "Description",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "location": "Lieu",
+    "addLocation": "Ajouter un lieu",
+    "invites": "Invitations",
+    "addInvite": "Ajouter une invitation",
+    "roles": "Rôles",
+    "cost": "Coût",
+    "costDistribution": "Répartition des coûts",
+    "equalSplit": "Partager équitablement",
+    "manualSplit": "Répartition manuelle",
+    "template": "Utiliser un modèle",
+    "saveAsTemplate": "Enregistrer comme modèle",
+    "recurring": "Événement récurrent",
+    "recurrenceRule": "Récurrence",
+    "status": {
+      "draft": "Brouillon",
+      "scheduled": "Planifié",
+      "cancelled": "Annulé",
+      "completed": "Terminé"
+    },
+    "inviteStatus": {
+      "pending": "En attente",
+      "accepted": "Accepté",
+      "declined": "Refusé"
+    }
+  },
+  "calendar": {
+    "month": "Mois",
+    "week": "Semaine",
+    "list": "Liste",
+    "today": "Aujourd'hui",
+    "importGoogle": "Importer depuis Google Calendar",
+    "exportGoogle": "Exporter vers Google Calendar",
+    "availability": "Disponibilité"
+  },
+  "chat": {
+    "title": "Discussion",
+    "sendMessage": "Envoyer un message",
+    "typeMessage": "Tapez un message...",
+    "noMessages": "Aucun message pour le moment"
+  },
+  "budget": {
+    "title": "Budget",
+    "monthly": "Budget mensuel",
+    "limit": "Limite du budget",
+    "spent": "Dépensé",
+    "remaining": "Restant",
+    "addBudget": "Ajouter un budget",
+    "events": "Événements"
+  },
+  "friends": {
+    "title": "Amis",
+    "addFriend": "Ajouter un ami",
+    "groups": "Groupes",
+    "createGroup": "Créer un groupe",
+    "blockUser": "Bloquer l'utilisateur",
+    "unblockUser": "Débloquer l'utilisateur",
+    "pending": "En attente",
+    "accepted": "Accepté",
+    "blocked": "Bloqué"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markRead": "Marquer comme lu",
+    "markAllRead": "Tout marquer comme lu",
+    "noNotifications": "Aucune notification",
+    "types": {
+      "event_invite": "Invitation à un événement",
+      "event_update": "Mise à jour d'événement",
+      "event_cancelled": "Événement annulé",
+      "chat_message": "Message de discussion"
+    }
+  },
+  "activity": {
+    "propose": "Proposer une activité",
+    "autoPropose": "Proposer automatiquement une activité",
+    "category": "Catégorie",
+    "estimatedCost": "Coût estimé",
+    "estimatedDuration": "Durée estimée"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "yes": "Oui",
+    "no": "Non",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "viewAll": "Voir tout"
+  }
+}
