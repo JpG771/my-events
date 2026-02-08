@@ -54,8 +54,10 @@ import { Event } from '../../models/event.model';
 
       <ng-template #noEvents>
         <div class="no-events">
-          <p>No events found</p>
-          <a routerLink="/events/create" class="btn btn-primary">{{ 'event.create' | translate }}</a>
+          <p *ngIf="loading">Loading events...</p>
+          <p *ngIf="!loading && error">{{ error }}</p>
+          <p *ngIf="!loading && !error">No events found</p>
+          <a routerLink="/events/create" class="btn btn-primary" *ngIf="!loading">{{ 'event.create' | translate }}</a>
         </div>
       </ng-template>
     </div>
@@ -249,6 +251,8 @@ import { Event } from '../../models/event.model';
 export class EventListComponent implements OnInit {
   events: Event[] = [];
   filter: 'all' | 'scheduled' | 'draft' | 'completed' = 'all';
+  loading = true;
+  error = '';
 
   constructor(
     private eventService: EventService,
@@ -256,9 +260,21 @@ export class EventListComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    const user = this.authService.getCurrentUser();
-    if (user) {
-      this.events = await this.eventService.getUserEvents(user.uid);
+    try {
+      const user = this.authService.getCurrentUser();
+      console.log('Current user:', user?.uid);
+      if (user) {
+        this.events = await this.eventService.getUserEvents(user.uid);
+        console.log('Loaded events:', this.events);
+      } else {
+        this.error = 'User not authenticated';
+        console.error('No user found');
+      }
+    } catch (error: any) {
+      this.error = error.message || 'Failed to load events';
+      console.error('Error loading events:', error);
+    } finally {
+      this.loading = false;
     }
   }
 

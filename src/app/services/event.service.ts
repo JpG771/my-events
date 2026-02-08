@@ -62,13 +62,30 @@ export class EventService {
 
   async getUserEvents(userId: string): Promise<Event[]> {
     const eventsCollection = collection(this.firestore, 'events');
-    const q = query(
+    
+    // Query for events where user is the creator
+    const creatorQuery = query(
       eventsCollection,
-      where('invites', 'array-contains', { userId }),
-      orderBy('startDate', 'desc')
+      where('creatorId', '==', userId)
     );
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Event));
+    
+    const creatorSnapshot = await getDocs(creatorQuery);
+    const events = creatorSnapshot.docs.map(doc => {
+      const data = doc.data();
+      return { 
+        id: doc.id,
+        ...data,
+        startDate: data['startDate']?.toDate?.() || new Date(data['startDate']),
+        endDate: data['endDate']?.toDate?.() || new Date(data['endDate']),
+        createdAt: data['createdAt']?.toDate?.() || new Date(data['createdAt']),
+        updatedAt: data['updatedAt']?.toDate?.() || new Date(data['updatedAt'])
+      } as Event;
+    });
+    
+    // Sort by startDate in memory
+    events.sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
+    
+    return events;
   }
 
   async cancelEventOccurrence(eventId: string, occurrenceDate: Date): Promise<void> {
