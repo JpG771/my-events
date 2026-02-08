@@ -305,7 +305,7 @@ import { Event, EventLocation, EventInvite } from '../../models/event.model';
   `]
 })
 export class EventFormComponent implements OnInit {
-  event: Event = this.getEmptyEvent();
+  event!: Event;
   startDateString = '';
   endDateString = '';
   isEditMode = false;
@@ -323,6 +323,7 @@ export class EventFormComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.event = this.getEmptyEvent();
     this.eventId = this.route.snapshot.paramMap.get('id') || undefined;
     if (this.eventId) {
       this.isEditMode = true;
