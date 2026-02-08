@@ -6,6 +6,7 @@ import { EventService } from '../../services/event.service';
 import { NotificationService } from '../../services/notification.service';
 import { BudgetService } from '../../services/budget.service';
 import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
 import { Event } from '../../models/event.model';
 import { Notification } from '../../models/notification.model';
 import { Budget } from '../../models/budget.model';
@@ -260,20 +261,40 @@ export class DashboardComponent implements OnInit {
     private eventService: EventService,
     private notificationService: NotificationService,
     private budgetService: BudgetService,
-    private authService: AuthService
+    private authService: AuthService,
+    private userService: UserService
   ) {}
 
   async ngOnInit() {
     const user = this.authService.getCurrentUser();
     if (user) {
+      await this.ensureUserProfile(user);
       await this.loadDashboardData(user.uid);
+    }
+  }
+
+  async ensureUserProfile(user: any) {
+    try {
+      const profile = await this.userService.getUserProfile(user.uid);
+      if (!profile) {
+        // Create user profile if it doesn't exist
+        await this.userService.createUserProfile({
+          uid: user.uid,
+          email: user.email || '',
+          displayName: user.displayName || user.email || 'User',
+          preferences: this.userService.getDefaultPreferences(),
+          blockedUsers: []
+        });
+      }
+    } catch (error) {
+      console.error('Error ensuring user profile:', error);
     }
   }
 
   async loadDashboardData(userId: string) {
     try {
-      this.upcomingEvents = await this.eventService.getUserEvents(userId);
-      this.currentBudget = await this.budgetService.getBudget(userId, this.budgetService.getCurrentMonth());
+      this.upcomingEvents = await this.eventService.getUserEvents(userId).catch(() => []);
+      this.currentBudget = await this.budgetService.getBudget(userId, this.budgetService.getCurrentMonth()).catch(() => null);
       
       this.notificationService.notifications$.subscribe(notifications => {
         this.unreadNotifications = notifications.filter(n => !n.read).length;

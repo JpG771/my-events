@@ -1,0 +1,144 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the resource
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Anyone authenticated can read any user profile (for friends, event participants, etc.)
+      allow read: if isAuthenticated();
+      // Users can only write their own profile
+      allow write: if isOwner(userId);
+    }
+    
+    // Events collection
+    match /events/{eventId} {
+      // Anyone authenticated can read events (they might be invited)
+      allow read: if isAuthenticated();
+      // Anyone authenticated can create events
+      allow create: if isAuthenticated();
+      // Only the creator can update or delete
+      allow update, delete: if isAuthenticated() && 
+        (request.auth.uid == resource.data.creatorId);
+    }
+    
+    // Event Templates
+    match /eventTemplates/{templateId} {
+      // Anyone authenticated can read templates
+      allow read: if isAuthenticated();
+      // Anyone authenticated can create templates
+      allow create: if isAuthenticated();
+      // Only the creator can update or delete
+      allow update, delete: if isAuthenticated() && 
+        (request.auth.uid == resource.data.creatorId);
+    }
+    
+    // Chats (event chats)
+    match /chats/{chatId} {
+      // Only participants can read
+      allow read: if isAuthenticated() && 
+        request.auth.uid in resource.data.participants;
+      // Participants can create
+      allow create: if isAuthenticated();
+      // Participants can update
+      allow update: if isAuthenticated() && 
+        request.auth.uid in resource.data.participants;
+        
+      // Chat messages subcollection
+      match /messages/{messageId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update: if isAuthenticated();
+      }
+    }
+    
+    // Direct Chats
+    match /directChats/{chatId} {
+      allow read: if isAuthenticated() && 
+        request.auth.uid in resource.data.participants;
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && 
+        request.auth.uid in resource.data.participants;
+        
+      // Direct chat messages subcollection
+      match /messages/{messageId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update: if isAuthenticated();
+      }
+    }
+    
+    // Notifications
+    match /notifications/{notificationId} {
+      // Users can only read their own notifications
+      allow read: if isAuthenticated() && 
+        request.auth.uid == resource.data.userId;
+      // System can create notifications (or users for others)
+      allow create: if isAuthenticated();
+      // Users can update their own notifications (mark as read)
+      allow update: if isAuthenticated() && 
+        request.auth.uid == resource.data.userId;
+      // Users can delete their own notifications
+      allow delete: if isAuthenticated() && 
+        request.auth.uid == resource.data.userId;
+    }
+    
+    // Budgets
+    match /budgets/{budgetId} {
+      // Users can only read their own budgets
+      allow read: if isAuthenticated() && 
+        request.auth.uid == resource.data.userId;
+      // Users can create their own budgets
+      allow create: if isAuthenticated() && 
+        request.auth.uid == request.resource.data.userId;
+      // Users can update their own budgets
+      allow update: if isAuthenticated() && 
+        request.auth.uid == resource.data.userId;
+      // Users can delete their own budgets
+      allow delete: if isAuthenticated() && 
+        request.auth.uid == resource.data.userId;
+    }
+    
+    // Friends
+    match /friends/{friendId} {
+      // Users can read their own friend relationships
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == resource.data.userId || 
+         request.auth.uid == resource.data.friendId);
+      // Users can create friend relationships
+      allow create: if isAuthenticated();
+      // Users can update their own friend relationships
+      allow update: if isAuthenticated() && 
+        request.auth.uid == resource.data.userId;
+      // Users can delete their own friend relationships
+      allow delete: if isAuthenticated() && 
+        request.auth.uid == resource.data.userId;
+    }
+    
+    // Friend Groups
+    match /friendGroups/{groupId} {
+      // Users can only read their own groups
+      allow read: if isAuthenticated() && 
+        request.auth.uid == resource.data.userId;
+      // Users can create their own groups
+      allow create: if isAuthenticated() && 
+        request.auth.uid == request.resource.data.userId;
+      // Users can update their own groups
+      allow update: if isAuthenticated() && 
+        request.auth.uid == resource.data.userId;
+      // Users can delete their own groups
+      allow delete: if isAuthenticated() && 
+        request.auth.uid == resource.data.userId;
+    }
+  }
+}
