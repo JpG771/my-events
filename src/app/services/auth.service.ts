@@ -11,7 +11,7 @@ import {
   signInWithPopup
 } from 'firebase/auth';
 import { firebase } from '../../firebase';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -20,10 +20,18 @@ export class AuthService {
   private auth: Auth = firebase.auth;
   private currentUserSubject = new BehaviorSubject<FirebaseUser | null>(null);
   public currentUser$: Observable<FirebaseUser | null> = this.currentUserSubject.asObservable();
+  
+  private authStateInitializedSubject = new ReplaySubject<boolean>(1);
+  public authStateInitialized$: Observable<boolean> = this.authStateInitializedSubject.asObservable();
+  public isAuthStateInitialized = false;
 
   constructor() {
     onAuthStateChanged(this.auth, (user) => {
       this.currentUserSubject.next(user);
+      if (!this.isAuthStateInitialized) {
+        this.isAuthStateInitialized = true;
+        this.authStateInitializedSubject.next(true);
+      }
     });
   }
 
