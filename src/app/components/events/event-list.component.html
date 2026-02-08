@@ -1,0 +1,59 @@
+<div class="events-container">
+  <div class="events-header">
+    <h1>{{ 'nav.events' | translate }}</h1>
+    <div class="header-actions">
+      <button (click)="refreshEvents()" class="btn btn-secondary" [disabled]="loading">
+        🔄 Refresh
+      </button>
+      <a routerLink="/events/create" class="btn btn-primary">{{ 'event.create' | translate }}</a>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <button [class.active]="filter === 'all'" (click)="filter = 'all'">All</button>
+    <button [class.active]="filter === 'scheduled'" (click)="filter = 'scheduled'">{{ 'event.status.scheduled' |
+      translate }}</button>
+    <button [class.active]="filter === 'draft'" (click)="filter = 'draft'">{{ 'event.status.draft' | translate
+      }}</button>
+    <button [class.active]="filter === 'completed'" (click)="filter = 'completed'">{{ 'event.status.completed' |
+      translate }}</button>
+  </div>
+
+  <div class="events-grid" *ngIf="filteredEvents.length > 0; else noEvents">
+    <div class="event-card" *ngFor="let event of filteredEvents">
+      <div class="event-header">
+        <h3>{{ event.title }}</h3>
+        <span class="event-status" [class]="'status-' + event.status">{{ event.status }}</span>
+      </div>
+      <p class="event-description">{{ event.description }}</p>
+      <div class="event-details">
+        <div class="detail-item">
+          <span class="icon">📅</span>
+          <span>{{ event.startDate | date:'short' }}</span>
+        </div>
+        <div class="detail-item" *ngIf="event.locations.length > 0">
+          <span class="icon">📍</span>
+          <span>{{ event.locations[0].name }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="icon">👥</span>
+          <span>{{ event.invites.length }} invites</span>
+        </div>
+      </div>
+      <div class="event-actions">
+        <a [routerLink]="['/events', event.id]" class="btn btn-sm">View</a>
+        <a [routerLink]="['/events', event.id, 'edit']" class="btn btn-sm btn-secondary">{{ 'common.edit' |
+          translate }}</a>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #noEvents>
+    <div class="no-events">
+      <p *ngIf="loading">Loading events...</p>
+      <p *ngIf="!loading && error">{{ error }}</p>
+      <p *ngIf="!loading && !error">No events found</p>
+      <a routerLink="/events/create" class="btn btn-primary" *ngIf="!loading">{{ 'event.create' | translate }}</a>
+    </div>
+  </ng-template>
+</div>
