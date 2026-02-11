@@ -103,16 +103,51 @@ export class FriendsComponent implements OnInit {
       const user = this.authService.getCurrentUser();
       if (!user) {
         this.error = 'User not authenticated';
+        this.cdr.detectChanges();
         return;
       }
 
-      // In a real app, you'd need to look up the user by email first
-      // For now, we'll assume friendEmail is actually a userId
-      await this.friendService.sendFriendRequest(user.uid, this.friendEmail);
+      const searchTerm = this.friendEmail.trim();
+      let friendUser: User | null = null;
+
+      // Try to look up the user by email first
+      if (searchTerm.includes('@')) {
+        friendUser = await this.userService.getUserByEmail(searchTerm);
+      }
+      
+      // If not found by email, try by user ID
+      if (!friendUser) {
+        friendUser = await this.userService.getUserProfile(searchTerm);
+      }
+      
+      if (!friendUser) {
+        this.error = 'User not found with this email address or ID';
+        this.cdr.detectChanges();
+        return;
+      }
+
+      // Check if trying to add self as friend
+      if (friendUser.uid === user.uid) {
+        this.error = 'You cannot add yourself as a friend';
+        this.cdr.detectChanges();
+        return;
+      }
+
+      // Check if already friends
+      const alreadyFriend = this.friends.some(f => f.friendId === friendUser.uid);
+      if (alreadyFriend) {
+        this.error = 'This user is already your friend';
+        this.cdr.detectChanges();
+        return;
+      }
+
+      await this.friendService.sendFriendRequest(user.uid, friendUser.uid);
       this.friendEmail = '';
+      this.error = ''; // Clear any previous errors
       await this.loadData();
     } catch (error: any) {
       this.error = error.message || 'Failed to send friend request';
+      this.cdr.detectChanges();
       console.error('Error sending friend request:', error);
     }
   }

@@ -6,6 +6,9 @@ import {
   setDoc,
   getDoc,
   updateDoc,
+  query,
+  where,
+  getDocs,
   Timestamp
 } from 'firebase/firestore';
 import { firebase } from '../../firebase';
@@ -33,6 +36,17 @@ export class UserService {
     const snapshot = await getDoc(userDoc);
     if (snapshot.exists()) {
       return snapshot.data() as User;
+    }
+    return null;
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    const usersCollection = collection(this.firestore, 'users');
+    const q = query(usersCollection, where('email', '==', email.toLowerCase().trim()));
+    const snapshot = await getDocs(q);
+    
+    if (!snapshot.empty) {
+      return snapshot.docs[0].data() as User;
     }
     return null;
   }
