@@ -47,15 +47,30 @@
     text-decoration: none;
     transition: all 0.3s;
     font-weight: 500;
+    position: relative;
     
     .icon {
       margin-right: 12px;
-      font-size: 20px;
+      font-size: 22px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 8px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 38px;
+      min-height: 38px;
+      transition: all 0.3s;
     }
     
     &:hover {
       background: rgba(255, 255, 255, 0.1);
       color: white;
+      
+      .icon {
+        background: rgba(255, 255, 255, 0.25);
+        transform: scale(1.1);
+      }
     }
     
     &.active {
@@ -63,6 +78,11 @@
       color: white;
       border-left: 4px solid #42a5f5;
       padding-left: 16px;
+      
+      .icon {
+        background: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
     }
   }
 }
