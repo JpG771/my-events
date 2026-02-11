@@ -70,4 +70,20 @@ export class EventListComponent implements OnInit {
     }
     return this.events.filter(event => event.status === this.filter);
   }
+
+  async deleteEvent(event: Event) {
+    if (!confirm(`Are you sure you want to delete "${event.title}"?`)) {
+      return;
+    }
+
+    try {
+      await this.eventService.deleteEvent(event.id);
+      this.events = this.events.filter(e => e.id !== event.id);
+      this.cdr.detectChanges();
+    } catch (error: any) {
+      this.error = error.message || 'Failed to delete event';
+      console.error('Error deleting event:', error);
+      this.cdr.detectChanges();
+    }
+  }
 }

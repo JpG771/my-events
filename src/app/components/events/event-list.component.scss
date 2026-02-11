@@ -173,6 +173,15 @@ h1 {
   background-color: #1e88e5;
 }
 
+.btn-danger {
+  background-color: #ef4444;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
 .btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -186,6 +195,14 @@ h1 {
 
 .btn-sm.btn-secondary {
   background-color: #42a5f5;
+}
+
+.btn-sm.btn-danger {
+  background-color: #ef4444;
+}
+
+.btn-sm.btn-danger:hover:not(:disabled) {
+  background-color: #dc2626;
 }
 
 .no-events {

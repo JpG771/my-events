@@ -41,9 +41,9 @@
         </div>
       </div>
       <div class="event-actions">
-        <a [routerLink]="['/events', event.id]" class="btn btn-sm">View</a>
         <a [routerLink]="['/events', event.id, 'edit']" class="btn btn-sm btn-secondary">{{ 'common.edit' |
           translate }}</a>
+        <button (click)="deleteEvent(event)" class="btn btn-sm btn-danger">{{ 'common.delete' | translate }}</button>
       </div>
     </div>
   </div>
