@@ -28,6 +28,12 @@ A comprehensive event management application built with Angular 21, Firebase, an
 
 - **Social Features**
   - Friend management with groups
+    - Add friends by email/user ID
+    - View all friends with user details and avatars
+    - Create friend groups with custom names and colors
+    - Organize friends into multiple groups
+    - Add/remove friends from groups
+    - View group members with expandable group cards
   - Block/unblock users
   - Event invitations with roles
   - Chat system (event chats and direct messages)

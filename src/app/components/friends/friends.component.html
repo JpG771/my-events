@@ -1,0 +1,216 @@
+<div class="friends-container">
+  <div class="friends-header">
+    <h1>{{ 'nav.friends' | translate }}</h1>
+    <div class="header-actions">
+      <button (click)="loadData()" class="btn btn-secondary" [disabled]="loading">
+        🔄 {{ 'common.refresh' | translate }}
+      </button>
+      <button (click)="showCreateGroupModal = true" class="btn btn-primary">
+        ➕ {{ 'friends.createGroup' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div class="error-message" *ngIf="error">
+    {{ error }}
+  </div>
+
+  <!-- Loading state -->
+  <div class="loading" *ngIf="loading">
+    <p>{{ 'common.loading' | translate }}...</p>
+  </div>
+
+  <div class="friends-content" *ngIf="!loading">
+    <!-- Friend Request Section -->
+    <div class="friend-request-section">
+      <h2>{{ 'friends.addFriend' | translate }}</h2>
+      <div class="request-form">
+        <input 
+          type="text" 
+          [(ngModel)]="friendEmail" 
+          placeholder="{{ 'friends.enterEmail' | translate }}"
+          class="input"
+        />
+        <button (click)="sendFriendRequest()" class="btn btn-primary" [disabled]="!friendEmail.trim()">
+          {{ 'friends.sendRequest' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <div class="friends-and-groups">
+      <!-- Friends List -->
+      <div class="friends-list-section">
+        <h2>{{ 'friends.myFriends' | translate }} ({{ friends.length }})</h2>
+        <div class="friends-list" *ngIf="friends.length > 0; else noFriends">
+          <div class="friend-card" *ngFor="let friend of friends">
+            <div class="friend-avatar">
+              <img *ngIf="friend.user?.photoURL" [src]="friend.user?.photoURL" [alt]="friend.user?.displayName || ''" />
+              <div *ngIf="!friend.user?.photoURL" class="avatar-placeholder">
+                {{ friend.user?.displayName?.charAt(0) || '?' }}
+              </div>
+            </div>
+            <div class="friend-info">
+              <h3>{{ friend.user?.displayName || 'Unknown' }}</h3>
+              <p>{{ friend.user?.email || friend.friendId }}</p>
+              <div class="friend-groups" *ngIf="friend.groups.length > 0">
+                <span class="group-badge" *ngFor="let groupId of friend.groups">
+                  {{ (groups | json) }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <ng-template #noFriends>
+          <div class="empty-state">
+            <p>{{ 'friends.noFriends' | translate }}</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Groups List -->
+      <div class="groups-section">
+        <h2>{{ 'friends.groups' | translate }} ({{ groups.length }})</h2>
+        <div class="groups-list" *ngIf="groups.length > 0; else noGroups">
+          <div 
+            class="group-card" 
+            *ngFor="let group of groups"
+            [class.selected]="selectedGroup?.id === group.id"
+          >
+            <div class="group-header" (click)="selectGroup(group)">
+              <div class="group-color" [style.background-color]="group.color"></div>
+              <div class="group-info">
+                <h3>{{ group.name }}</h3>
+                <p>{{ group.memberIds.length }} {{ 'friends.members' | translate }}</p>
+              </div>
+              <div class="group-actions" (click)="$event.stopPropagation()">
+                <button 
+                  (click)="openAddToGroupModal(group)" 
+                  class="btn btn-sm"
+                  title="{{ 'friends.addMembers' | translate }}"
+                >
+                  ➕
+                </button>
+                <button 
+                  (click)="deleteGroup(group)" 
+                  class="btn btn-sm btn-danger"
+                  title="{{ 'common.delete' | translate }}"
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+            
+            <!-- Group Members (shown when expanded) -->
+            <div class="group-members" *ngIf="selectedGroup?.id === group.id">
+              <div class="member-list" *ngIf="getGroupFriends(group).length > 0; else noMembers">
+                <div class="member-item" *ngFor="let friend of getGroupFriends(group)">
+                  <div class="member-avatar">
+                    <img *ngIf="friend.user?.photoURL" [src]="friend.user?.photoURL" [alt]="friend.user?.displayName || ''" />
+                    <div *ngIf="!friend.user?.photoURL" class="avatar-placeholder-sm">
+                      {{ friend.user?.displayName?.charAt(0) || '?' }}
+                    </div>
+                  </div>
+                  <span>{{ friend.user?.displayName || 'Unknown' }}</span>
+                </div>
+              </div>
+              <ng-template #noMembers>
+                <p class="no-members">{{ 'friends.noMembers' | translate }}</p>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+        <ng-template #noGroups>
+          <div class="empty-state">
+            <p>{{ 'friends.noGroups' | translate }}</p>
+            <button (click)="showCreateGroupModal = true" class="btn btn-primary">
+              {{ 'friends.createFirstGroup' | translate }}
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Group Modal -->
+  <div class="modal" *ngIf="showCreateGroupModal" (click)="closeModals()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ 'friends.createGroup' | translate }}</h2>
+        <button class="close-btn" (click)="closeModals()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>{{ 'friends.groupName' | translate }}</label>
+          <input 
+            type="text" 
+            [(ngModel)]="newGroupName" 
+            placeholder="{{ 'friends.enterGroupName' | translate }}"
+            class="input"
+          />
+        </div>
+        <div class="form-group">
+          <label>{{ 'friends.groupColor' | translate }}</label>
+          <div class="color-picker">
+            <input type="color" [(ngModel)]="newGroupColor" class="color-input" />
+            <span class="color-value">{{ newGroupColor }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="closeModals()" class="btn btn-secondary">
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button (click)="createGroup()" class="btn btn-primary" [disabled]="!newGroupName.trim()">
+          {{ 'common.create' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add to Group Modal -->
+  <div class="modal" *ngIf="showAddToGroupModal" (click)="closeModals()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ 'friends.addToGroup' | translate }}: {{ groupToAddTo?.name }}</h2>
+        <button class="close-btn" (click)="closeModals()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="friend-selection-list" *ngIf="groupToAddTo">
+          <div 
+            class="friend-selection-item" 
+            *ngFor="let friend of getAvailableFriendsForGroup(groupToAddTo)"
+            (click)="toggleFriendSelection(friend.friendId)"
+            [class.selected]="selectedFriendsForGroup.includes(friend.friendId)"
+          >
+            <div class="friend-avatar-sm">
+              <img *ngIf="friend.user?.photoURL" [src]="friend.user?.photoURL" [alt]="friend.user?.displayName || ''" />
+              <div *ngIf="!friend.user?.photoURL" class="avatar-placeholder-sm">
+                {{ friend.user?.displayName?.charAt(0) || '?' }}
+              </div>
+            </div>
+            <span>{{ friend.user?.displayName || 'Unknown' }}</span>
+            <div class="checkbox" [class.checked]="selectedFriendsForGroup.includes(friend.friendId)">
+              ✓
+            </div>
+          </div>
+        </div>
+        <p class="empty-state" *ngIf="groupToAddTo && getAvailableFriendsForGroup(groupToAddTo).length === 0">
+          {{ 'friends.allFriendsInGroup' | translate }}
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button (click)="closeModals()" class="btn btn-secondary">
+          {{ 'common.cancel' | translate }}
+        </button>
+        <button 
+          (click)="addFriendsToGroup()" 
+          class="btn btn-primary" 
+          [disabled]="selectedFriendsForGroup.length === 0"
+        >
+          {{ 'friends.addSelected' | translate }} ({{ selectedFriendsForGroup.length }})
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
