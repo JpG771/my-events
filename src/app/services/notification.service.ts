@@ -55,19 +55,34 @@ export class NotificationService {
       orderBy('createdAt', 'desc')
     );
 
-    this.unsubscribe = onSnapshot(q, (snapshot) => {
-      const notifications = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Notification));
-      this.notificationsSubject.next(notifications);
-    });
+    this.unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const notifications = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        } as Notification));
+        this.notificationsSubject.next(notifications);
+      },
+      (error) => {
+        // Handle permission errors silently (happens during logout)
+        if (error.code === 'permission-denied') {
+          console.log('Notification subscription ended due to logout');
+          this.notificationsSubject.next([]);
+        } else {
+          console.error('Error in notification subscription:', error);
+        }
+      }
+    );
   }
 
   unsubscribeFromNotifications(): void {
     if (this.unsubscribe) {
       this.unsubscribe();
+      this.unsubscribe = undefined;
     }
+    // Clear the notifications when unsubscribing
+    this.notificationsSubject.next([]);
   }
 
   async markAsRead(notificationId: string): Promise<void> {

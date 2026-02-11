@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -252,7 +252,7 @@ import { Budget } from '../../models/budget.model';
     }
   `]
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   upcomingEvents: Event[] = [];
   unreadNotifications = 0;
   currentBudget: Budget | null = null;
@@ -327,5 +327,9 @@ export class DashboardComponent implements OnInit {
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     }
+  }
+
+  ngOnDestroy() {
+    this.notificationService.unsubscribeFromNotifications();
   }
 }

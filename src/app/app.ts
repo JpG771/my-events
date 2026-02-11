@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from './services/auth.service';
+import { NotificationService } from './services/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ export class App implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private notificationService: NotificationService,
     private translate: TranslateService,
     private router: Router
   ) {
@@ -31,6 +33,8 @@ export class App implements OnInit {
   }
 
   async logout() {
+    // Unsubscribe from all Firestore listeners before signing out
+    this.notificationService.unsubscribeFromNotifications();
     await this.authService.logout();
     this.router.navigate(['/login']);
   }
