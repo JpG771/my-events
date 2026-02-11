@@ -11,6 +11,7 @@ export interface Event {
   invites: EventInvite[];
   templateId?: string;
   status: 'draft' | 'scheduled' | 'cancelled' | 'completed';
+  isPublic: boolean;
   costDistribution: CostDistribution;
   chatId: string;
   createdAt: Date;

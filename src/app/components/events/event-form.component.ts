@@ -86,6 +86,7 @@ export class EventFormComponent implements OnInit {
       isRecurring: false,
       invites: [],
       status: 'draft',
+      isPublic: false,
       costDistribution: {
         total: 0,
         type: 'equal'

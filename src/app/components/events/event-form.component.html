@@ -35,6 +35,13 @@
       </div>
 
       <div class="form-group">
+        <label>
+          <input type="checkbox" [(ngModel)]="event.isRecurring" name="isRecurring" />
+          {{ 'event.recurring' | translate }}
+        </label>
+      </div>
+
+      <div class="form-group">
         <label>{{ 'event.location' | translate }}</label>
         <div class="locations-list">
           <div class="location-item" *ngFor="let location of event.locations; let i = index">
@@ -46,6 +53,20 @@
         <button type="button" (click)="addLocation()" class="btn btn-secondary btn-sm">
           {{ 'event.addLocation' | translate }}
         </button>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'event.privacy' | translate }}</label>
+        <div class="radio-group">
+          <label>
+            <input type="radio" [(ngModel)]="event.isPublic" name="isPublic" [value]="false" />
+            {{ 'event.private' | translate }}
+          </label>
+          <label>
+            <input type="radio" [(ngModel)]="event.isPublic" name="isPublic" [value]="true" />
+            {{ 'event.public' | translate }}
+          </label>
+        </div>
       </div>
 
       <div class="form-group">
@@ -66,13 +87,6 @@
             {{ 'event.manualSplit' | translate }}
           </label>
         </div>
-      </div>
-
-      <div class="form-group">
-        <label>
-          <input type="checkbox" [(ngModel)]="event.isRecurring" name="isRecurring" />
-          {{ 'event.recurring' | translate }}
-        </label>
       </div>
 
       <div class="error-message" *ngIf="errorMessage">

@@ -50,6 +50,9 @@
     "saveAsTemplate": "Enregistrer comme modèle",
     "recurring": "Événement récurrent",
     "recurrenceRule": "Récurrence",
+    "privacy": "Confidentialité",
+    "private": "Privé",
+    "public": "Public",
     "status": {
       "draft": "Brouillon",
       "scheduled": "Planifié",

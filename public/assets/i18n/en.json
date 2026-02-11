@@ -50,6 +50,9 @@
     "saveAsTemplate": "Save as Template",
     "recurring": "Recurring Event",
     "recurrenceRule": "Recurrence",
+    "privacy": "Privacy",
+    "private": "Private",
+    "public": "Public",
     "status": {
       "draft": "Draft",
       "scheduled": "Scheduled",
