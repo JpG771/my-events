@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -7,6 +7,7 @@ import { NotificationService } from '../../services/notification.service';
 import { BudgetService } from '../../services/budget.service';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
+import { FriendService } from '../../services/friend.service';
 import { Event } from '../../models/event.model';
 import { Notification } from '../../models/notification.model';
 import { Budget } from '../../models/budget.model';
@@ -262,7 +263,9 @@ export class DashboardComponent implements OnInit {
     private notificationService: NotificationService,
     private budgetService: BudgetService,
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private friendService: FriendService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
@@ -293,13 +296,34 @@ export class DashboardComponent implements OnInit {
 
   async loadDashboardData(userId: string) {
     try {
-      this.upcomingEvents = await this.eventService.getUserEvents(userId).catch(() => []);
-      this.currentBudget = await this.budgetService.getBudget(userId, this.budgetService.getCurrentMonth()).catch(() => null);
+      // Load all data in parallel
+      const [allEvents, budget, friends] = await Promise.all([
+        this.eventService.getUserEvents(userId).catch(() => []),
+        this.budgetService.getBudget(userId, this.budgetService.getCurrentMonth()).catch(() => null),
+        this.friendService.getUserFriends(userId).catch(() => [])
+      ]);
+
+      // Filter to only show upcoming events (scheduled status and future start date)
+      const now = new Date();
+      this.upcomingEvents = allEvents.filter(event => {
+        const startDate = event.startDate instanceof Date ? event.startDate : new Date(event.startDate);
+        return event.status === 'scheduled' && startDate >= now;
+      }).sort((a, b) => {
+        const dateA = a.startDate instanceof Date ? a.startDate : new Date(a.startDate);
+        const dateB = b.startDate instanceof Date ? b.startDate : new Date(b.startDate);
+        return dateA.getTime() - dateB.getTime();
+      });
+
+      this.currentBudget = budget;
+      this.friendsCount = friends.length;
       
       this.notificationService.notifications$.subscribe(notifications => {
         this.unreadNotifications = notifications.filter(n => !n.read).length;
+        this.cdr.detectChanges();
       });
       this.notificationService.subscribeToNotifications(userId);
+
+      this.cdr.detectChanges();
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     }
