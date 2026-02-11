@@ -20,6 +20,8 @@
           class="form-control"></textarea>
       </div>
 
+      <hr>
+
       <div class="form-group">
         <label>
           <input type="checkbox" [(ngModel)]="event.isAllDay" name="isAllDay" (ngModelChange)="onAllDayChange()" />
@@ -52,6 +54,8 @@
         </select>
       </div>
 
+      <hr>
+
       <div class="form-group">
         <label>{{ 'event.location' | translate }}</label>
         <div class="locations-list">
@@ -66,6 +70,8 @@
         </button>
       </div>
 
+      <hr>
+
       <div class="form-group">
         <label>{{ 'event.privacy' | translate }}</label>
         <div class="radio-group">
@@ -79,6 +85,8 @@
           </label>
         </div>
       </div>
+
+      <hr>
 
       <div class="form-group">
         <label for="costTotal">{{ 'event.cost' | translate }}</label>
