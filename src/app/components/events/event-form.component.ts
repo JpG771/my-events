@@ -83,7 +83,7 @@ export class EventFormComponent implements OnInit {
       locations: [],
       startDate: new Date(),
       endDate: new Date(),
-      isRecurring: false,
+      recurrenceFrequency: 'none',
       isAllDay: false,
       invites: [],
       status: 'draft',

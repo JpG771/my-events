@@ -49,8 +49,16 @@
     "template": "Utiliser un modèle",
     "saveAsTemplate": "Enregistrer comme modèle",
     "recurring": "Événement récurrent",
+    "recurrence": "Récurrence",
     "allDay": "Événement toute la journée",
-    "recurrenceRule": "Récurrence",
+    "recurrenceRule": "Règle de récurrence",
+    "recurrenceType": {
+      "none": "Ne se répète pas",
+      "daily": "Tous les jours",
+      "weekly": "Toutes les semaines",
+      "monthly": "Tous les mois",
+      "yearly": "Tous les ans"
+    },
     "privacy": "Confidentialité",
     "private": "Privé",
     "public": "Public",

@@ -42,10 +42,14 @@
       </div>
 
       <div class="form-group">
-        <label>
-          <input type="checkbox" [(ngModel)]="event.isRecurring" name="isRecurring" />
-          {{ 'event.recurring' | translate }}
-        </label>
+        <label for="recurrence">{{ 'event.recurrence' | translate }}</label>
+        <select id="recurrence" name="recurrence" [(ngModel)]="event.recurrenceFrequency" class="form-control">
+          <option value="none">{{ 'event.recurrenceType.none' | translate }}</option>
+          <option value="daily">{{ 'event.recurrenceType.daily' | translate }}</option>
+          <option value="weekly">{{ 'event.recurrenceType.weekly' | translate }}</option>
+          <option value="monthly">{{ 'event.recurrenceType.monthly' | translate }}</option>
+          <option value="yearly">{{ 'event.recurrenceType.yearly' | translate }}</option>
+        </select>
       </div>
 
       <div class="form-group">

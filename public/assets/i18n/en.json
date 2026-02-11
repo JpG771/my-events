@@ -49,8 +49,16 @@
     "template": "Use Template",
     "saveAsTemplate": "Save as Template",
     "recurring": "Recurring Event",
+    "recurrence": "Recurrence",
     "allDay": "All-day event",
-    "recurrenceRule": "Recurrence",
+    "recurrenceRule": "Recurrence Rule",
+    "recurrenceType": {
+      "none": "Does not repeat",
+      "daily": "Every day",
+      "weekly": "Every week",
+      "monthly": "Every month",
+      "yearly": "Every year"
+    },
     "privacy": "Privacy",
     "private": "Private",
     "public": "Public",

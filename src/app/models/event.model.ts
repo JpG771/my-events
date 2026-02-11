@@ -6,7 +6,7 @@ export interface Event {
   locations: EventLocation[];
   startDate: Date;
   endDate: Date;
-  isRecurring: boolean;
+  recurrenceFrequency: 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly';
   isAllDay: boolean;
   recurrenceRule?: RecurrenceRule;
   invites: EventInvite[];
