@@ -1,0 +1,73 @@
+<div class="calendar-container">
+  <div class="calendar-header">
+    <h1>{{ 'nav.calendar' | translate }}</h1>
+    <div class="view-switcher">
+      <button [class.active]="view === 'month'" (click)="view = 'month'">{{ 'calendar.month' | translate }}</button>
+      <button [class.active]="view === 'week'" (click)="view = 'week'">{{ 'calendar.week' | translate }}</button>
+      <button [class.active]="view === 'list'" (click)="view = 'list'">{{ 'calendar.list' | translate }}</button>
+    </div>
+  </div>
+
+  <div class="calendar-controls">
+    <button (click)="previousPeriod()" class="btn btn-icon">◀</button>
+    <button (click)="today()" class="btn">{{ 'calendar.today' | translate }}</button>
+    <button (click)="nextPeriod()" class="btn btn-icon">▶</button>
+    <h2>{{ currentPeriodLabel }}</h2>
+  </div>
+
+  <div class="calendar-content" *ngIf="view === 'month'">
+    <div class="calendar-grid">
+      <div class="day-header" *ngFor="let day of weekDays">{{ day }}</div>
+      <div class="calendar-day" *ngFor="let day of calendarDays" [class.other-month]="!day.isCurrentMonth"
+        [class.today]="day.isToday">
+        <div class="day-number">{{ day.day }}</div>
+        <div class="day-events">
+          <div class="event-indicator" *ngFor="let event of day.events" [title]="event.title">
+            {{ event.title }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-content" *ngIf="view === 'week'">
+    <div class="week-view">
+      <div class="week-day" *ngFor="let day of weekDays">
+        <div class="week-day-header">
+          <div class="day-name">{{ day }}</div>
+          <div class="day-date">{{ getCurrentWeekDay(weekDays.indexOf(day)) }}</div>
+        </div>
+        <div class="week-day-events">
+          <div class="week-event" *ngFor="let event of getWeekDayEvents(weekDays.indexOf(day))"
+            [routerLink]="['/events', event.id]">
+            <div class="event-time">{{ event.startDate | date:'shortTime' }}</div>
+            <div class="event-title">{{ event.title }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-content" *ngIf="view === 'list'">
+    <div class="list-view">
+      <div class="list-item" *ngFor="let event of sortedEvents" [routerLink]="['/events', event.id]">
+        <div class="list-date">
+          <div class="date-day">{{ event.startDate | date:'d' }}</div>
+          <div class="date-month">{{ event.startDate | date:'MMM' }}</div>
+        </div>
+        <div class="list-details">
+          <h3>{{ event.title }}</h3>
+          <p>{{ event.startDate | date:'shortTime' }} - {{ event.endDate | date:'shortTime' }}</p>
+          <p class="event-location" *ngIf="event.locations.length > 0">
+            📍 {{ event.locations[0].name }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-actions">
+    <button class="btn btn-secondary">{{ 'calendar.importGoogle' | translate }}</button>
+    <button class="btn btn-secondary">{{ 'calendar.exportGoogle' | translate }}</button>
+  </div>
+</div>
