@@ -1,0 +1,86 @@
+<div class="form-container">
+  <div class="form-card">
+    <h1>{{ isEditMode ? ('event.edit' | translate) : ('event.create' | translate) }}</h1>
+
+    <form (ngSubmit)="onSubmit()" #eventForm="ngForm">
+      <div class="form-group">
+        <label for="title">{{ 'event.title' | translate }} *</label>
+        <input type="text" id="title" name="title" [(ngModel)]="event.title" required class="form-control" />
+      </div>
+
+      <div class="form-group">
+        <label for="description">{{ 'event.description' | translate }}</label>
+        <textarea id="description" name="description" [(ngModel)]="event.description" rows="4"
+          class="form-control"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startDate">{{ 'event.startDate' | translate }} *</label>
+          <input type="datetime-local" id="startDate" name="startDate" [(ngModel)]="startDateString" required
+            class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">{{ 'event.endDate' | translate }} *</label>
+          <input type="datetime-local" id="endDate" name="endDate" [(ngModel)]="endDateString" required
+            class="form-control" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'event.location' | translate }}</label>
+        <div class="locations-list">
+          <div class="location-item" *ngFor="let location of event.locations; let i = index">
+            <input type="text" [(ngModel)]="location.name" [name]="'location-' + i" placeholder="Location name"
+              class="form-control" />
+            <button type="button" (click)="removeLocation(i)" class="btn btn-danger-sm">×</button>
+          </div>
+        </div>
+        <button type="button" (click)="addLocation()" class="btn btn-secondary btn-sm">
+          {{ 'event.addLocation' | translate }}
+        </button>
+      </div>
+
+      <div class="form-group">
+        <label for="costTotal">{{ 'event.cost' | translate }}</label>
+        <input type="number" id="costTotal" name="costTotal" [(ngModel)]="event.costDistribution.total"
+          class="form-control" min="0" />
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'event.costDistribution' | translate }}</label>
+        <div class="radio-group">
+          <label>
+            <input type="radio" [(ngModel)]="event.costDistribution.type" name="costType" value="equal" />
+            {{ 'event.equalSplit' | translate }}
+          </label>
+          <label>
+            <input type="radio" [(ngModel)]="event.costDistribution.type" name="costType" value="manual" />
+            {{ 'event.manualSplit' | translate }}
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" [(ngModel)]="event.isRecurring" name="isRecurring" />
+          {{ 'event.recurring' | translate }}
+        </label>
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="!eventForm.valid || loading">
+          {{ loading ? ('common.loading' | translate) : ('common.save' | translate) }}
+        </button>
+        <button type="button" (click)="onCancel()" class="btn btn-secondary">
+          {{ 'common.cancel' | translate }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
