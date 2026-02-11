@@ -49,6 +49,7 @@
     "template": "Utiliser un modèle",
     "saveAsTemplate": "Enregistrer comme modèle",
     "recurring": "Événement récurrent",
+    "allDay": "Événement toute la journée",
     "recurrenceRule": "Récurrence",
     "privacy": "Confidentialité",
     "private": "Privé",

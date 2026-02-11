@@ -7,6 +7,7 @@ export interface Event {
   startDate: Date;
   endDate: Date;
   isRecurring: boolean;
+  isAllDay: boolean;
   recurrenceRule?: RecurrenceRule;
   invites: EventInvite[];
   templateId?: string;

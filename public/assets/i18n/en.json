@@ -49,6 +49,7 @@
     "template": "Use Template",
     "saveAsTemplate": "Save as Template",
     "recurring": "Recurring Event",
+    "allDay": "All-day event",
     "recurrenceRule": "Recurrence",
     "privacy": "Privacy",
     "private": "Private",

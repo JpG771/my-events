@@ -44,8 +44,8 @@ export class EventFormComponent implements OnInit {
     } else {
       // Initialize date strings for new event
       const now = new Date();
-      this.startDateString = this.dateToString(now);
-      this.endDateString = this.dateToString(new Date(now.getTime() + 3600000)); // 1 hour later
+      this.startDateString = this.dateToString(now, false);
+      this.endDateString = this.dateToString(new Date(now.getTime() + 3600000), false); // 1 hour later
     }
     this.cdr.detectChanges();
   }
@@ -58,8 +58,8 @@ export class EventFormComponent implements OnInit {
       if (event) {
         this.event = event;
         console.log('Loaded event:', event);
-        this.startDateString = this.dateToString(event.startDate);
-        this.endDateString = this.dateToString(event.endDate);
+        this.startDateString = this.dateToString(event.startDate, event.isAllDay);
+        this.endDateString = this.dateToString(event.endDate, event.isAllDay);
       } else {
         this.errorMessage = 'Event not found';
         console.error('Event not found with id:', id);
@@ -84,6 +84,7 @@ export class EventFormComponent implements OnInit {
       startDate: new Date(),
       endDate: new Date(),
       isRecurring: false,
+      isAllDay: false,
       invites: [],
       status: 'draft',
       isPublic: false,
@@ -109,7 +110,51 @@ export class EventFormComponent implements OnInit {
     this.event.locations.splice(index, 1);
   }
 
-  dateToString(date: Date | any): string {
+  onAllDayChange() {
+    // Convert date strings to preserve the date when toggling all-day
+    if (this.startDateString) {
+      // Extract date parts from the current string to avoid timezone issues
+      let year: number, month: number, day: number, hours = 0, minutes = 0;
+      
+      if (this.event.isAllDay) {
+        // Converting from datetime to date - extract date part
+        const match = this.startDateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (match) {
+          [, year, month, day] = match.map(Number);
+          this.startDateString = `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        }
+      } else {
+        // Converting from date to datetime - add time component
+        const match = this.startDateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (match) {
+          [, year, month, day] = match.map(Number);
+          this.startDateString = `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T00:00`;
+        }
+      }
+    }
+    
+    if (this.endDateString) {
+      let year: number, month: number, day: number, hours = 23, minutes = 59;
+      
+      if (this.event.isAllDay) {
+        // Converting from datetime to date - extract date part
+        const match = this.endDateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (match) {
+          [, year, month, day] = match.map(Number);
+          this.endDateString = `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        }
+      } else {
+        // Converting from date to datetime - add time component
+        const match = this.endDateString.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (match) {
+          [, year, month, day] = match.map(Number);
+          this.endDateString = `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T23:59`;
+        }
+      }
+    }
+  }
+
+  dateToString(date: Date | any, isAllDay: boolean = false): string {
     // Handle various date formats (Date object, Timestamp, string, etc.)
     let d: Date;
     if (date instanceof Date) {
@@ -126,6 +171,11 @@ export class EventFormComponent implements OnInit {
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
+    
+    if (isAllDay) {
+      return `${year}-${month}-${day}`;
+    }
+    
     const hours = String(d.getHours()).padStart(2, '0');
     const minutes = String(d.getMinutes()).padStart(2, '0');
     return `${year}-${month}-${day}T${hours}:${minutes}`;
