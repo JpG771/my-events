@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -382,7 +382,8 @@ export class CalendarComponent implements OnInit {
 
   constructor(
     private eventService: EventService,
-    private authService: AuthService
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
@@ -391,6 +392,7 @@ export class CalendarComponent implements OnInit {
       this.events = await this.eventService.getUserEvents(user.uid);
     }
     this.generateCalendar();
+    this.cdr.detectChanges();
   }
 
   get currentPeriodLabel(): string {
