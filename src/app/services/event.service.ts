@@ -73,8 +73,8 @@ export class EventService {
     const events = creatorSnapshot.docs.map(doc => {
       const data = doc.data();
       return { 
-        id: doc.id,
         ...data,
+        id: doc.id,
         startDate: data['startDate']?.toDate?.() || new Date(data['startDate']),
         endDate: data['endDate']?.toDate?.() || new Date(data['endDate']),
         createdAt: data['createdAt']?.toDate?.() || new Date(data['createdAt']),

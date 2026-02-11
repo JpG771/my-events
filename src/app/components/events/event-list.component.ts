@@ -72,6 +72,13 @@ export class EventListComponent implements OnInit {
   }
 
   async deleteEvent(event: Event) {
+    if (!event.id) {
+      this.error = 'Cannot delete event: Event ID is missing';
+      console.error('Event ID is missing:', event);
+      this.cdr.detectChanges();
+      return;
+    }
+
     if (!confirm(`Are you sure you want to delete "${event.title}"?`)) {
       return;
     }
