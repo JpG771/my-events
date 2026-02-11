@@ -2,7 +2,13 @@
   <div class="form-card">
     <h1>{{ isEditMode ? ('event.edit' | translate) : ('event.create' | translate) }}</h1>
 
-    <form (ngSubmit)="onSubmit()" #eventForm="ngForm">
+    <!-- Loading state for edit mode -->
+    <div class="loading-state" *ngIf="isEditMode && loading">
+      <p>{{ 'common.loading' | translate }}...</p>
+    </div>
+
+    <!-- Form visible when: not in edit mode, or in edit mode and not loading -->
+    <form (ngSubmit)="onSubmit()" #eventForm="ngForm" *ngIf="!isEditMode || !loading">
       <div class="form-group">
         <label for="title">{{ 'event.title' | translate }} *</label>
         <input type="text" id="title" name="title" [(ngModel)]="event.title" required class="form-control" />

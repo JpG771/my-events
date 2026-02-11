@@ -53,9 +53,11 @@ export class EventFormComponent implements OnInit {
   async loadEvent(id: string) {
     try {
       this.loading = true;
+      this.cdr.detectChanges();
       const event = await this.eventService.getEvent(id);
       if (event) {
         this.event = event;
+        console.log('Loaded event:', event);
         this.startDateString = this.dateToString(event.startDate);
         this.endDateString = this.dateToString(event.endDate);
       } else {
@@ -67,6 +69,7 @@ export class EventFormComponent implements OnInit {
       console.error('Error loading event:', error);
     } finally {
       this.loading = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -105,8 +108,20 @@ export class EventFormComponent implements OnInit {
     this.event.locations.splice(index, 1);
   }
 
-  dateToString(date: Date): string {
-    const d = new Date(date);
+  dateToString(date: Date | any): string {
+    // Handle various date formats (Date object, Timestamp, string, etc.)
+    let d: Date;
+    if (date instanceof Date) {
+      d = date;
+    } else if (date?.toDate && typeof date.toDate === 'function') {
+      // Firestore Timestamp
+      d = date.toDate();
+    } else if (typeof date === 'string' || typeof date === 'number') {
+      d = new Date(date);
+    } else {
+      d = new Date();
+    }
+    
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
