@@ -25,80 +25,8 @@ export class EventService {
   private firestore: Firestore = firebase.firestore;
   private eventsSubject = new BehaviorSubject<Event[]>([]);
   public events$: Observable<Event[]> = this.eventsSubject.asObservable();
-  private dbName = 'MyEventsDB';
-  private storeName = 'events';
-  private dbVersion = 1;
 
-  constructor() {
-    this.initDB();
-  }
-
-  private async initDB(): Promise<IDBDatabase> {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, this.dbVersion);
-
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result);
-
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        if (!db.objectStoreNames.contains(this.storeName)) {
-          const objectStore = db.createObjectStore(this.storeName, { keyPath: 'userId' });
-          objectStore.createIndex('timestamp', 'timestamp', { unique: false });
-        }
-      };
-    });
-  }
-
-  private async cacheEvents(userId: string, events: Event[]): Promise<void> {
-    try {
-      const db = await this.initDB();
-      const transaction = db.transaction([this.storeName], 'readwrite');
-      const store = transaction.objectStore(this.storeName);
-      
-      const data = {
-        userId,
-        events,
-        timestamp: Date.now()
-      };
-      
-      await store.put(data);
-    } catch (error) {
-      console.error('Failed to cache events:', error);
-    }
-  }
-
-  private async getCachedEvents(userId: string): Promise<Event[] | null> {
-    try {
-      const db = await this.initDB();
-      const transaction = db.transaction([this.storeName], 'readonly');
-      const store = transaction.objectStore(this.storeName);
-      
-      return new Promise((resolve, reject) => {
-        const request = store.get(userId);
-        
-        request.onsuccess = () => {
-          const result = request.result;
-          if (result) {
-            // Check if cache is less than 5 minutes old
-            const cacheAge = Date.now() - result.timestamp;
-            if (cacheAge < 5 * 60 * 1000) {
-              resolve(result.events);
-            } else {
-              resolve(null);
-            }
-          } else {
-            resolve(null);
-          }
-        };
-        
-        request.onerror = () => reject(request.error);
-      });
-    } catch (error) {
-      console.error('Failed to get cached events:', error);
-      return null;
-    }
-  }
+  constructor() {}
 
   async createEvent(event: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
     const eventsCollection = collection(this.firestore, 'events');
@@ -133,15 +61,6 @@ export class EventService {
   }
 
   async getUserEvents(userId: string): Promise<Event[]> {
-    // Try to get from cache first
-    const cachedEvents = await this.getCachedEvents(userId);
-    if (cachedEvents) {
-      console.log('Returning cached events');
-      this.eventsSubject.next(cachedEvents);
-      return cachedEvents;
-    }
-
-    // Fetch from Firestore if no cache or cache expired
     const eventsCollection = collection(this.firestore, 'events');
     
     // Query for events where user is the creator
@@ -165,10 +84,6 @@ export class EventService {
     
     // Sort by startDate in memory
     events.sort((a, b) => b.startDate.getTime() - a.startDate.getTime());
-    
-    // Cache the results
-    await this.cacheEvents(userId, events);
-    this.eventsSubject.next(events);
     
     return events;
   }
